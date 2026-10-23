@@ -36,8 +36,11 @@ def main():
     for c in core.CUTOFF_OPTIONS:
         p = s.panel(c)
         per_day = p.groupby("delivery_date").forecast_mw.apply(lambda x: int(x.notna().sum()))
-        bad = per_day[per_day < 48]
-        print(f"  {c}: total {int(per_day.sum())}/{len(p)} ({100*per_day.sum()/len(p):.1f}%), days short: {len(bad)}")
+        exp_day = p.groupby("delivery_date").on_grid.sum()
+        bad = per_day[per_day < exp_day]
+        n_exp = int(exp_day.sum())
+        print(f"  {c}: {int(per_day.sum())}/{n_exp} native-grid slots have a forecast ({100*per_day.sum()/n_exp:.1f}%), "
+              f"of {len(p)} half-hours; days short: {len(bad)}")
         if len(bad):
             print("     e.g.", dict(list(bad.items())[:5]))
         u = p.dropna(subset=["horizon_h"])

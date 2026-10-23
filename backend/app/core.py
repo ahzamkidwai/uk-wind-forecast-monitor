@@ -66,6 +66,7 @@ def build_panel(fc: pd.DataFrame, act: pd.DataFrame, dates, hhmm: str) -> pd.Dat
     # 2-day persistence: actual 48h earlier. Always known at any cutoff on D-1 (it lies in D-2).
     p["persistence_mw"] = act_s.reindex(p.start_time - pd.Timedelta(hours=48)).to_numpy()
     p["error_mw"] = p.forecast_mw - p.actual_mw
+    p["on_grid"] = p.start_time.isin(pd.DatetimeIndex(fc.start_time.unique()))
     p["hour"] = p.start_time.dt.tz_convert(LONDON).dt.hour
     return p
 
@@ -121,7 +122,8 @@ def add_band_loo(panel: pd.DataFrame, lo_q=0.10, hi_q=0.90) -> pd.DataFrame:
 
 def summarise(p: pd.DataFrame) -> dict:
     """Accuracy summary for a panel that already has band columns."""
-    expected = len(p)
+    # expected = len(p)
+    expected = int(p["on_grid"].sum()) if "on_grid" in p else len(p)
     v = p.dropna(subset=["forecast_mw", "actual_mw"])
     out = dict(n_expected=expected, n_valid=len(v),
                coverage_pct=100 * len(v) / expected if expected else None)

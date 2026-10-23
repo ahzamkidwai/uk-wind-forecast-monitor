@@ -67,6 +67,12 @@ function DataTable({ columns, rows, emptyText = 'No data available.' }) {
   return <div className="table-scroll"><table><thead><tr>{columns.map((c) => <th key={c.key}><button onClick={() => setSort((s) => ({ key: c.key, asc: s.key === c.key ? !s.asc : true }))}>{c.label}{sort.key === c.key ? (sort.asc ? ' ↑' : ' ↓') : ''}</button></th>)}</tr></thead><tbody>{sorted.map((r, i) => <tr key={r.id ?? r.date ?? r.hour ?? r.level ?? r.horizon_from_h ?? i}>{columns.map((c) => <td key={c.key}>{c.render ? c.render(r[c.key], r) : (r[c.key] ?? '—')}</td>)}</tr>)}</tbody></table></div>;
 }
 
+const line = (k, connect = false) => {
+  let d = "", pen = false;
+  rows.forEach((r, i) => { const v = r[k]; if (v == null) { if (!connect) pen = false; return; } d += `${pen ? "L" : "M"}${x(i)},${y(v)}`; pen = true; });
+  return d;
+};
+
 export default function App() {
   const [meta, setMeta] = useState(null);
   const [date, setDate] = useState('');

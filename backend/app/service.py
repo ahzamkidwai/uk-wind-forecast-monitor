@@ -52,8 +52,9 @@ class Store:
         p = self.panel("09:20")
         per_day = p.groupby("delivery_date").agg(
             forecast_slots=("forecast_mw", lambda s: int(s.notna().sum())),
+            expected_forecast_slots=("on_grid", "sum"),
             actual_slots=("actual_mw", lambda s: int(s.notna().sum())))
-        gaps = per_day[(per_day.forecast_slots < 48) | (per_day.actual_slots < 48)]
+        gaps = per_day[(per_day.forecast_slots < per_day.expected_forecast_slots) | (per_day.actual_slots < 48)]
         return clean(dict(
             source=self.meta.get("source"), written_at=self.meta.get("written_at"),
             dates=self.dates, cutoffs=core.CUTOFF_OPTIONS, default_cutoff="09:20",
