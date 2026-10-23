@@ -1,0 +1,10 @@
+{
+  "delivery_from": "2026-01-02",
+  "delivery_to": "2026-02-01",
+  "max_horizon_h": 72,
+  "source": "elexon",
+  "base_url": "https://data.elexon.co.uk/bmrs/api/v1",
+  "written_at": "2026-10-23T12:40:58.304182+00:00",
+  "n_forecast_rows": 15775,
+  "n_actual_rows": 1584
+}
